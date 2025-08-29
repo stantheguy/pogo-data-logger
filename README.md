@@ -2,6 +2,7 @@
 
 **A lightweight web tool for Pokémon GO players to log their play sessions, track mobile data usage, and export structured CSV entries for analysis.**
 
+**[Live Version](stantheguy.github.io/pogo-data-logger/)**
 ---
 
 ## 🧠 What It Does
