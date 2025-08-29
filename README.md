@@ -57,6 +57,6 @@ MIT License — free to use, remix, and share.
 
 ---
 
-## 🙌 Credits
+## 💬 Why I Made This Tool
 
-Created by [Dexter] in Nelson Mandela Bay, South Africa — built for trainers who play smart, not just hard.
+As a Pokémon GO player in South Africa, I wanted to understand exactly how much mobile data the game uses during different types of play—especially in areas where data is limited and bundles matter. After manually tracking my own sessions, I realized there was no simple way for other trainers to log their activity and see the patterns. So I built this tool: a lightweight form that turns your play session into a clean CSV entry, ready for analysis or sharing. It’s designed to help players optimize their gameplay, stretch their data bundles, and make smarter decisions—without needing spreadsheets or technical know-how.
