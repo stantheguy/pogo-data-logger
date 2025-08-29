@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📍 Pokémon GO Hunt Log</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: start;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .gym-entry {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .gym-entry input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(86, 171, 47, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .csv-output {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #28a745;
+        }
+
+        .csv-content {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #4a5568;
+            resize: vertical;
+            min-height: 200px;
+        }
+
+        .csv-textarea {
+            width: 100%;
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border: 2px solid #4a5568;
+            resize: vertical;
+            min-height: 200px;
+            max-height: 400px;
+            white-space: pre;
+            overflow-wrap: break-word;
+        }
+
+        .csv-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .copy-btn {
+            background: #48bb78;
+            color: white;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #38a169;
+            transform: translateY(-1px);
+        }
+
+        .copy-success {
+            background: #38a169 !important;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+        }
+
+        .add-gym-btn {
+            background: #28a745;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .remove-gym-btn {
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .duration-display {
+            font-weight: 600;
+            color: #667eea;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📍 Pokémon GO Hunt Log</h1>
+            <p>Track your hunting sessions and export to CSV</p>
+        </div>
+
+        <div class="form-container">
+            <form id="huntForm">
+                <!-- Basic Info Section -->
+                <div class="section">
+                    <div class="section-title">📅 Session Details</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="startTime">Start Time</label>
+                            <input type="time" id="startTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="endTime">End Time</label>
+                            <input type="time" id="endTime" required>
+                        </div>
+                        <div class="form-group">
+                            <div class="duration-display" id="durationDisplay">Duration will calculate automatically</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Usage Section -->
+                <div class="section">
+                    <div class="section-title">📶 Data Usage</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="bundle">Bundle Type</label>
+                            <select id="bundle">
+                                <option value="">Select bundle</option>
+                                <option value="Daily">Daily</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="Monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dataBefore">Data Before</label>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="number" id="dataBefore" step="0.01">
+                                <select id="dataBeforeUnit">
+                                    <option value="MB">MB</option>
+                                    <option value="GB">GB</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dataAfter">Data After</label>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="number" id="dataAfter" step="0.01">
+                                <select id="dataAfterUnit">
+                                    <option value="MB">MB</option>
+                                    <option value="GB">GB</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battery Section -->
+                <div class="section">
+                    <div class="section-title">🔋 Battery</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="batteryStart">Start (%)</label>
+                            <input type="number" id="batteryStart" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="batteryEnd">End (%)</label>
+                            <input type="number" id="batteryEnd" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gyms Section -->
+                <div class="section">
+                    <div class="section-title">🏟️ Gyms</div>
+                    <div id="gymsContainer">
+                        <div class="gym-entry">
+                            <input type="text" placeholder="Gym name" class="gym-name">
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" class="gym-battled">
+                                    <label>Battled</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" class="gym-claimed">
+                                    <label>Claimed</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" class="gym-defender">
+                                    <label>Left defender</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" class="gym-fed">
+                                    <label>Fed</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" class="gym-badge">
+                                    <label>Badge checked</label>
+                                </div>
+                                <button type="button" class="btn remove-gym-btn" onclick="removeGym(this)">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn add-gym-btn" onclick="addGym()">Add Gym</button>
+                </div>
+
+                <!-- Routes Section -->
+                <div class="section">
+                    <div class="section-title">🗺️ Routes</div>
+                    <div id="routesContainer">
+                        <div class="gym-entry">
+                            <input type="text" placeholder="Route name (e.g., Park to Park x2)" class="route-name">
+                            <button type="button" class="btn remove-gym-btn" onclick="removeRoute(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn add-gym-btn" onclick="addRoute()">Add Route</button>
+                </div>
+
+                <!-- Encounters Section -->
+                <div class="section">
+                    <div class="section-title">🎯 Encounters</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="pokemonCaught">Pokémon Caught</label>
+                            <input type="number" id="pokemonCaught" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="pokemonFled">Pokémon Fled</label>
+                            <input type="number" id="pokemonFled" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="pokestops">PokéStops Spun</label>
+                            <input type="number" id="pokestops" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Eggs Section -->
+                <div class="section">
+                    <div class="section-title">🥚 Eggs</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="eggsHatched">Hatched Count</label>
+                            <input type="number" id="eggsHatched" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="hatchDistances">Hatch Distances (km)</label>
+                            <input type="text" id="hatchDistances" placeholder="e.g., 2;2;5">
+                        </div>
+                        <div class="form-group">
+                            <label for="eggsStarted">Started Count</label>
+                            <input type="number" id="eggsStarted" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="inProgress">In-Progress</label>
+                            <input type="text" id="inProgress" placeholder="e.g., 5 (3.5/5), 10 (1.2/10)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team GO Rocket Section -->
+                <div class="section">
+                    <div class="section-title">🚀 Team GO Rocket</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="rocketGrunts">Grunts</label>
+                            <input type="number" id="rocketGrunts" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="rocketLeaders">Leaders</label>
+                            <input type="number" id="rocketLeaders" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Research Section -->
+                <div class="section">
+                    <div class="section-title">📅 Research</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Special Research Completed</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="radio" name="specialResearch" value="Yes" id="researchYes">
+                                    <label for="researchYes">Yes</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" name="specialResearch" value="No" id="researchNo">
+                                    <label for="researchNo">No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tasksProgressed">Tasks Progressed (approx)</label>
+                            <input type="number" id="tasksProgressed" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movement Section -->
+                <div class="section">
+                    <div class="section-title">🧭 Movement</div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" name="movement" value="Walking" id="walking">
+                            <label for="walking">Walking</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" name="movement" value="Bike/Scooter" id="bike">
+                            <label for="bike">Bike/Scooter</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" name="movement" value="Car" id="car">
+                            <label for="car">Car</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" name="movement" value="Mixed" id="mixed">
+                            <label for="mixed">Mixed</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Setup Section -->
+                <div class="section">
+                    <div class="section-title">⚙️ Setup</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Battery Saver</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="radio" name="batterySaver" value="ON" id="saverOn">
+                                    <label for="saverOn">ON</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" name="batterySaver" value="OFF" id="saverOff">
+                                    <label for="saverOff">OFF</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>AR Mode</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="radio" name="arMode" value="ON" id="arOn">
+                                    <label for="arOn">ON</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" name="arMode" value="OFF" id="arOff">
+                                    <label for="arOff">OFF</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Offline Maps</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="radio" name="offlineMaps" value="Yes" id="mapsYes">
+                                    <label for="mapsYes">Yes</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" name="offlineMaps" value="No" id="mapsNo">
+                                    <label for="mapsNo">No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Assets Preloaded</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="radio" name="assetsPreloaded" value="Yes" id="assetsYes">
+                                    <label for="assetsYes">Yes</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" name="assetsPreloaded" value="No" id="assetsNo">
+                                    <label for="assetsNo">No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Background Apps Closed</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="radio" name="backgroundClosed" value="Yes" id="backgroundYes">
+                                    <label for="backgroundYes">Yes</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" name="backgroundClosed" value="No" id="backgroundNo">
+                                    <label for="backgroundNo">No</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Section -->
+                <div class="section">
+                    <div class="section-title">💡 Additional Info</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="tags">Tags (3-6 keywords)</label>
+                            <input type="text" id="tags" placeholder="summary keywords">
+                        </div>
+                        <div class="form-group" style="grid-column: 1/-1;">
+                            <label for="notes">Notes & Observations</label>
+                            <textarea id="notes" rows="3" placeholder="lag/freezes, strategy changes, highlights"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Generate CSV</button>
+                </div>
+            </form>
+
+            <div id="csvOutput" class="csv-output" style="display:none;">
+                <div class="section-title">📄 CSV Output</div>
+                <p style="margin-bottom: 15px; color: #666; font-size: 14px;">
+                    You can edit the CSV data below if needed, then copy or download it:
+                </p>
+                <textarea id="csvContent" class="csv-textarea" placeholder="Generated CSV will appear here..."></textarea>
+                <div style="margin-top: 10px;">
+                    <button type="button" class="btn copy-btn" id="copyBtn">📋 Copy to Clipboard</button>
+                    <button type="button" class="btn btn-success" id="downloadBtn">📥 Download CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let csvData = '';
+
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Calculate duration automatically
+        function updateDuration() {
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            
+            if (startTime && endTime) {
+                const start = new Date(`1970-01-01T${startTime}:00`);
+                const end = new Date(`1970-01-01T${endTime}:00`);
+                let diff = end - start;
+                
+                if (diff < 0) {
+                    diff += 24 * 60 * 60 * 1000; // Add 24 hours for next day
+                }
+                
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                
+                document.getElementById('durationDisplay').textContent = 
+                    `Duration: ${minutes} minutes (${hours}:${mins.toString().padStart(2, '0')})`;
+            }
+        }
+
+        document.getElementById('startTime').addEventListener('change', updateDuration);
+        document.getElementById('endTime').addEventListener('change', updateDuration);
+
+        function addGym() {
+            const container = document.getElementById('gymsContainer');
+            const gymEntry = document.createElement('div');
+            gymEntry.className = 'gym-entry';
+            gymEntry.innerHTML = `
+                <input type="text" placeholder="Gym name" class="gym-name">
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" class="gym-battled">
+                        <label>Battled</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" class="gym-claimed">
+                        <label>Claimed</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" class="gym-defender">
+                        <label>Left defender</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" class="gym-fed">
+                        <label>Fed</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" class="gym-badge">
+                        <label>Badge checked</label>
+                    </div>
+                    <button type="button" class="btn remove-gym-btn" onclick="removeGym(this)">Remove</button>
+                </div>
+            `;
+            container.insertBefore(gymEntry, container.lastElementChild);
+        }
+
+        function removeGym(button) {
+            button.closest('.gym-entry').remove();
+        }
+
+        function addRoute() {
+            const container = document.getElementById('routesContainer');
+            const routeEntry = document.createElement('div');
+            routeEntry.className = 'gym-entry';
+            routeEntry.innerHTML = `
+                <input type="text" placeholder="Route name (e.g., Park to Park x2)" class="route-name">
+                <button type="button" class="btn remove-gym-btn" onclick="removeRoute(this)">Remove</button>
+            `;
+            container.insertBefore(routeEntry, container.lastElementChild);
+        }
+
+        function removeRoute(button) {
+            button.closest('.gym-entry').remove();
+        }
+
+        function convertToMB(value, unit) {
+            if (unit === 'GB') {
+                return value * 1024;
+            }
+            return value;
+        }
+
+        function generateCSV(data) {
+            const headers = [
+                'Date', 'Start Time', 'End Time', 'Duration (min)', 'Duration (hh:mm)',
+                'Data Used (MB)', 'Data Balance Before (MB)', 'Data Balance After (MB)',
+                'Battery Start (%)', 'Battery End (%)', 'Battery Drain (%)',
+                'Gyms Targeted (names)', 'Gyms Battled (count)', 'Gyms Claimed (count)',
+                'Defenders Left (count)', 'Berries Fed (count)', 'Routes Walked (count)',
+                'Routes Names', 'Spins (count)', 'Pokemon Caught (count)', 'Pokemon Fled (count)',
+                'Eggs Hatched (count)', 'Eggs Hatched Distances (km)', 'Eggs Started (count)',
+                'Eggs Started Distances/Progress', 'Rocket Grunts (count)', 'Rocket Leaders (count)',
+                'Special Research Completed (count)', 'Tasks Progressed (approx)', 'Movement Mode',
+                'Battery Saver', 'AR Mode', 'Offline Maps', 'Assets Preloaded',
+                'Background Apps Closed', 'Tags', 'Notes'
+            ];
+
+            const csvContent = headers.map(h => `"${h}"`).join(',') + '\n' +
+                             data.map(field => `"${field}"`).join(',');
+            
+            return csvContent;
+        }
+
+        document.getElementById('huntForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Collect form data
+            const formData = new FormData(this);
+            
+            // Calculate duration
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            let durationMin = 0;
+            let durationHHMM = '';
+            
+            if (startTime && endTime) {
+                const start = new Date(`1970-01-01T${startTime}:00`);
+                const end = new Date(`1970-01-01T${endTime}:00`);
+                let diff = end - start;
+                
+                if (diff < 0) {
+                    diff += 24 * 60 * 60 * 1000;
+                }
+                
+                durationMin = Math.floor(diff / 60000);
+                const hours = Math.floor(durationMin / 60);
+                const mins = durationMin % 60;
+                durationHHMM = `${hours}:${mins.toString().padStart(2, '0')}`;
+            }
+
+            // Calculate data usage
+            const dataBeforeValue = parseFloat(document.getElementById('dataBefore').value) || 0;
+            const dataAfterValue = parseFloat(document.getElementById('dataAfter').value) || 0;
+            const dataBeforeUnit = document.getElementById('dataBeforeUnit').value;
+            const dataAfterUnit = document.getElementById('dataAfterUnit').value;
+            
+            const dataBeforeMB = convertToMB(dataBeforeValue, dataBeforeUnit);
+            const dataAfterMB = convertToMB(dataAfterValue, dataAfterUnit);
+            const dataUsed = dataBeforeMB - dataAfterMB;
+
+            // Calculate battery drain
+            const batteryStart = parseInt(document.getElementById('batteryStart').value) || 0;
+            const batteryEnd = parseInt(document.getElementById('batteryEnd').value) || 0;
+            const batteryDrain = batteryStart - batteryEnd;
+
+            // Collect gym data
+            const gymEntries = document.querySelectorAll('.gym-entry');
+            const gymNames = [];
+            let gymsBattled = 0, gymsClaimed = 0, defendersLeft = 0, berriesFed = 0;
+
+            gymEntries.forEach(entry => {
+                const name = entry.querySelector('.gym-name')?.value;
+                if (name) {
+                    gymNames.push(name);
+                    if (entry.querySelector('.gym-battled')?.checked) gymsBattled++;
+                    if (entry.querySelector('.gym-claimed')?.checked) gymsClaimed++;
+                    if (entry.querySelector('.gym-defender')?.checked) defendersLeft++;
+                    if (entry.querySelector('.gym-fed')?.checked) berriesFed++;
+                }
+            });
+
+            // Collect route data
+            const routeEntries = document.querySelectorAll('#routesContainer .route-name');
+            const routeNames = [];
+            routeEntries.forEach(entry => {
+                if (entry.value) {
+                    routeNames.push(entry.value);
+                }
+            });
+
+            // Get radio button values
+            const specialResearch = document.querySelector('input[name="specialResearch"]:checked')?.value || '';
+            const movement = document.querySelector('input[name="movement"]:checked')?.value || '';
+            const batterySaver = document.querySelector('input[name="batterySaver"]:checked')?.value || '';
+            const arMode = document.querySelector('input[name="arMode"]:checked')?.value || '';
+            const offlineMaps = document.querySelector('input[name="offlineMaps"]:checked')?.value || '';
+            const assetsPreloaded = document.querySelector('input[name="assetsPreloaded"]:checked')?.value || '';
+            const backgroundClosed = document.querySelector('input[name="backgroundClosed"]:checked')?.value || '';
+
+            // Build CSV row data
+            const csvRow = [
+                document.getElementById('date').value,
+                startTime,
+                endTime,
+                durationMin,
+                durationHHMM,
+                dataUsed.toFixed(2),
+                dataBeforeMB.toFixed(2),
+                dataAfterMB.toFixed(2),
+                batteryStart,
+                batteryEnd,
+                batteryDrain,
+                gymNames.join('; '),
+                gymsBattled,
+                gymsClaimed,
+                defendersLeft,
+                berriesFed,
+                routeNames.length,
+                routeNames.join('; '),
+                document.getElementById('pokestops').value || 0,
+                document.getElementById('pokemonCaught').value || 0,
+                document.getElementById('pokemonFled').value || 0,
+                document.getElementById('eggsHatched').value || 0,
+                document.getElementById('hatchDistances').value,
+                document.getElementById('eggsStarted').value || 0,
+                document.getElementById('inProgress').value,
+                document.getElementById('rocketGrunts').value || 0,
+                document.getElementById('rocketLeaders').value || 0,
+                specialResearch === 'Yes' ? 1 : 0,
+                document.getElementById('tasksProgressed').value || 0,
+                movement,
+                batterySaver,
+                arMode,
+                offlineMaps,
+                assetsPreloaded,
+                backgroundClosed,
+                document.getElementById('tags').value,
+                document.getElementById('notes').value
+            ];
+
+            csvData = generateCSV(csvRow);
+            
+            // Display CSV in editable textarea
+            document.getElementById('csvContent').value = csvData;
+            document.getElementById('csvOutput').style.display = 'block';
+            
+            // Scroll to output
+            document.getElementById('csvOutput').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const csvTextarea = document.getElementById('csvContent');
+            csvTextarea.select();
+            csvTextarea.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                
+                // Visual feedback
+                const copyBtn = document.getElementById('copyBtn');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.classList.add('copy-success');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('copy-success');
+                }, 2000);
+                
+            } catch (err) {
+                alert('Please manually select and copy the text');
+            }
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            // Get the current content from the textarea (in case user edited it)
+            const currentCSV = document.getElementById('csvContent').value;
+            const blob = new Blob([currentCSV], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const date = document.getElementById('date').value;
+            a.href = url;
+            a.download = `pokemon-go-hunt-log-${date}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
